@@ -3,25 +3,25 @@ import { getJson } from './helpers.js';
 
 export const state = {
   recipe: {},
+  recipeList: {},
 };
 export const loadRecipe = async function (recipeId) {
   try {
     const data = await getJson(`${API_URL}/${recipeId}`);
     // console.log(data);
     const { recipe } = data.data;
-
-    state.recipe = {
-      id: recipe.id,
-      title: recipe.title,
-      publisher: recipe.publisher,
-      sourceUrl: recipe.source_url,
-      image: recipe.image_url,
-      servings: recipe.servings,
-      cookingTime: recipe.cooking_time,
-      ingredients: recipe.ingredients,
-    };
+    state.recipe = recipe;
   } catch (err) {
     //console.error(`${err} 🐞`);
     throw err;
   }
+};
+
+export const loadRecipeList = async function (keyword) {
+  try {
+    //console.log(keyword);
+    const data = await getJson(`${API_URL}?search=${keyword}`);
+
+    state.recipeList = data.data.recipes;
+  } catch (error) {}
 };
