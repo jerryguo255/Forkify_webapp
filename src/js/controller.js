@@ -13,14 +13,6 @@ const recipeContainer = document.querySelector('.recipe');
 ///////////////////////////////////////
 //https://forkify-api.herokuapp.com/api/v2/recipes/:id
 
-//#region  listen hashchange and load event
-['hashchange', 'load'].forEach(v => {
-  window.addEventListener(v, () => {
-    controlRecipe();
-  });
-});
-//#endregion
-
 const controlRecipe = async function () {
   try {
     //get hash value from url
@@ -33,14 +25,18 @@ const controlRecipe = async function () {
     //asking model loading data
     await model.loadRecipe(id);
 
-    recipeView.render(model.state.recipe);
+    recipeView.renderRecipeArea(model.state.recipe);
     // 1.2 Rendering recipe
 
     // 1.3 clear message and loading spinner
   } catch (err) {
-    console.error(err);
+    recipeView.renderError(err.message);
   }
 };
 
-//showRecipe();
+const init = function () {
+  recipeView.addHandlerDom(controlRecipe);
+};
+
+init();
 //#endregion

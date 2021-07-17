@@ -1,30 +1,40 @@
 import { async } from 'regenerator-runtime';
 import { TIMEOUT_SEC } from './config';
+
+//set a timmer promise, when timeout, reject promise with error
 const timeout = function (s) {
   return new Promise(function (_, reject) {
     setTimeout(function () {
-      reject(new Error(`Request took too long! Timeout after ${s} second`));
+      reject(
+        new Error(
+          `Timeout after ${s} seconds.\n Request took too long. <br>   Please try again 😥`
+        )
+      );
     }, s * 1000);
   });
 };
 
+//get Json data
 export const getJson = async function (url) {
   try {
-    const pros = new Promise(async resolve => {
+    // two steps wrap in a promise,
+    const getJsonPromise = new Promise(async (resolve, reject) => {
       const res = await fetch(url);
       const data = await res.json();
-      console.log(data);
-      console.log('-----');
-      if (!res.ok) throw new Error(`${data.message} (${res.status})..`);
+
+      if (!res.ok)
+        reject(
+          new Error(
+            ` Cannot fetch data from thrid party service please Try again. <br><br>${data.message} (${res.status})`
+          )
+        );
 
       resolve(data);
     });
-    const result = Promise.race([timeout(TIMEOUT_SEC), pros]).then(
-      data => data
-    );
-    return result;
-    // if (!res.ok) throw new Error(`${data.message}(${res.status})`);
-  } catch (error) {
-    console.error(error);
+
+    //race two promise
+    return await Promise.race([timeout(TIMEOUT_SEC), getJsonPromise]);
+  } catch (err) {
+    throw err;
   }
 };

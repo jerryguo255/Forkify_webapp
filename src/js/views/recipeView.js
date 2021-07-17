@@ -6,21 +6,12 @@ class RecipeView {
   #parentElement = document.querySelector('.recipe');
   #data;
   //public API
-  render(data) {
-    this.#data = data;
-
-    this.#clear();
-    this.#parentElement.insertAdjacentHTML(
-      'afterbegin',
-      this.#generateMarkup()
-    );
-  }
 
   #clear() {
     this.#parentElement.innerHTML = '';
   }
 
-  #generateMarkupIngredient(ing) {
+  #generateMarkup_Ingredients(ing) {
     return `
          <li class="recipe__ingredient">
           <svg class="recipe__icon">
@@ -36,7 +27,7 @@ class RecipeView {
           </li>
       `;
   }
-  #generateMarkup() {
+  #generateMarkup_Recipe() {
     return `
           <figure class="recipe__fig">
                 <img src="${
@@ -96,7 +87,7 @@ class RecipeView {
                 <h2 class="heading--2">Recipe ingredients</h2>
                 <ul class="recipe__ingredient-list">
                 ${this.#data.ingredients
-                  .map(this.#generateMarkupIngredient)
+                  .map(this.#generateMarkup_Ingredients)
                   .join('')}
 
                   <li class="recipe__ingredient">
@@ -145,6 +136,31 @@ class RecipeView {
               </div> 
     `;
   }
+
+  renderError(errorMessage) {
+    const markup = `      
+    <div class="error">
+        <div>
+          <svg>
+            <use href="src/img/${icons}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${errorMessage}</p>
+    </div>`;
+
+    //clear the spinner
+    this.#clear();
+    this.#parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+  renderRecipeArea(data) {
+    this.#data = data;
+
+    this.#clear();
+    this.#parentElement.insertAdjacentHTML(
+      'afterbegin',
+      this.#generateMarkup_Recipe()
+    );
+  }
   renderSpinner() {
     const markup = ` 
     <div class="spinner">
@@ -156,12 +172,11 @@ class RecipeView {
     this.#parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
-  //   removeSpinner() {
-  //     console.log(this.#parentElement);
-  //     const element = this.#parentElement.querySelectorAll('.spinner');
+  //#region  listen hashchange and load event
 
-  //     console.log(element);
-  //     this.#parentElement.removeChild(element[0]);
-  //   }
+  addHandlerDom(handlder) {
+    ['hashchange', 'load'].forEach(v => window.addEventListener(v, handlder));
+  }
+  //#endregion
 }
 export default new RecipeView();
