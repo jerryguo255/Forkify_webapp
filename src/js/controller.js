@@ -1,11 +1,13 @@
 import * as model from './model.js';
 import recipeView from './views/recipeView.js';
+import searchView from './views/searchView.js';
 import recipeListView from './views/recipeListView';
 
 // for bable in the parcel to polyfill 'promise'
 import 'regenerator-runtime/runtime';
 // for bable in the parcel to polyfill other ES 6 and above features
 import 'core-js/stable';
+import searchView from './views/searchView.js';
 
 // const recipeContainer = document.querySelector('.recipe');
 
@@ -33,15 +35,17 @@ const controlRecipe = async function () {
   }
 };
 
-const controlRecipeList = async function (keyword) {
+const controlSearchResults = async function () {
   try {
-    // console.log(keyword.value);
-    await model.loadRecipeList(keyword.value);
-    //console.log(model.state.recipeList);
-    recipeListView.renderRecipeList(model.state.recipeList);
+    //get search query
+    const queryKeywords = searchView.getQuery();
+    if (!queryKeywords) return;
 
-    // loding recipes by given searching keyword
-    // render list with state
+    // load search results
+    await model.loadRecipeList(queryKeywords);
+
+    //render it
+    recipeListView.renderRecipeList(model.state.search.recipeList);
   } catch (error) {
     recipeView.renderError(error.message);
   }
@@ -50,10 +54,12 @@ const controlRecipeList = async function (keyword) {
 const init = function () {
   //Publish–subscribe pattern
   //subscriber
-  recipeListView.addHandlerToSearchBar(controlRecipeList);
+
+  searchView.addHandlerToSearchBar(controlSearchResults);
+
+  //add
   recipeView.addHandlerDom(controlRecipe);
 };
 
-controlRecipeList();
 init();
 //#endregion

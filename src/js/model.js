@@ -3,7 +3,10 @@ import { getJson } from './helpers.js';
 
 export const state = {
   recipe: {},
-  recipeList: {},
+  search: {
+    recipeList: [],
+    query: '',
+  },
 };
 export const loadRecipe = async function (recipeId) {
   try {
@@ -22,6 +25,9 @@ export const loadRecipeList = async function (keyword) {
     //console.log(keyword);
     const data = await getJson(`${API_URL}?search=${keyword}`);
 
-    state.recipeList = data.data.recipes;
-  } catch (error) {}
+    state.search.query = keyword;
+    state.search.recipeList = data.data.recipes;
+  } catch (error) {
+    throw err;
+  }
 };

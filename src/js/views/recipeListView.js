@@ -1,10 +1,7 @@
 import icons from 'url:../../img/icons.svg';
 class RecipeListView {
-  //private fields
   #parentEl = document.querySelector('.results');
-  #keyword;
   #data;
-  //private methods
 
   #generateMarkup(recipe) {
     //console.log(recipe);
@@ -27,15 +24,6 @@ class RecipeListView {
     return markup;
   }
 
-  // listen search bar input value
-  addHandlerToSearchBar(handler) {
-    const searchBtn = document.querySelector('.search__btn');
-    const keyword = document.querySelector('.search__field');
-
-    searchBtn.addEventListener('click', () => {
-      handler(keyword);
-    });
-  }
   renderRecipeList(dataList) {
     // console.log(dataList);
     this.#data = dataList;
