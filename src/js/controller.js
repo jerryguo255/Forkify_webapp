@@ -9,6 +9,9 @@ import 'regenerator-runtime/runtime';
 import 'core-js/stable';
 import searchView from './views/searchView.js';
 
+if (module.hot) {
+  module.hot.accept();
+}
 // const recipeContainer = document.querySelector('.recipe');
 
 // https://forkify-api.herokuapp.com/v2
@@ -29,7 +32,7 @@ const controlRecipe = async function () {
     await model.loadRecipe(id);
 
     // send data to view
-    recipeView.renderRecipeArea(model.state.recipe);
+    recipeView.render(model.state.recipe);
   } catch (error) {
     recipeView.renderError(error.message);
   }
@@ -41,13 +44,14 @@ const controlSearchResults = async function () {
     const queryKeywords = searchView.getQuery();
     if (!queryKeywords) return;
 
+    recipeListView.renderSpinner();
     // load search results
     await model.loadRecipeList(queryKeywords);
 
     //render it
-    recipeListView.renderRecipeList(model.state.search.recipeList);
+    recipeListView.render(model.state.search.recipeList);
   } catch (error) {
-    recipeView.renderError(error.message);
+    recipeListView.renderError(error.message);
   }
 };
 

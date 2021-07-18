@@ -14,7 +14,10 @@ class SearchView {
   addHandlerToSearchBar(handler) {
     const searchFormEl = document.querySelector('.search');
 
-    searchFormEl.addEventListener('submit', handler);
+    searchFormEl.addEventListener('submit', e => {
+      e.preventDefault();
+      handler();
+    });
   }
 }
 

@@ -1,17 +1,13 @@
 // tell controller.js file where the svg file is
 import icons from 'url:../../img/icons.svg';
-
+import View from './view';
 import { Fraction } from 'fractional';
+// import View from './view';
 
-class RecipeAreaView {
-  #parentElement = document.querySelector('.recipe');
-  #data;
+class RecipeAreaView extends View {
+  _parentElement = document.querySelector('.recipe');
 
-  #clear() {
-    this.#parentElement.innerHTML = '';
-  }
-
-  #generateMarkup_Ingredients(ing) {
+  _generateMarkup_Ingredients(ing) {
     return `
     <li class="recipe__ingredient">
     <svg class="recipe__icon">
@@ -27,14 +23,14 @@ class RecipeAreaView {
     </li>
     `;
   }
-  #generateMarkup_Recipe() {
+  _generateMarkup() {
     return `
     <figure class="recipe__fig">
     <img src="${
-      this.#data.image_url
+      this._data.image_url
     }" alt="Tomato" class="recipe__img" crossorigin/>
     <h1 class="recipe__title">
-    <span>${this.#data.title}</span>
+    <span>${this._data.title}</span>
     </h1>
     </figure>
     
@@ -44,7 +40,7 @@ class RecipeAreaView {
     <use href="${icons}#icon-clock"></use>
     </svg>
     <span class="recipe__info-data recipe__info-data--minutes">${
-      this.#data.cookingTime
+      this._data.cooking_time
     }</span>
     <span class="recipe__info-text">minutes</span>
     </div>
@@ -53,7 +49,7 @@ class RecipeAreaView {
     <use href="${icons}#icon-users"></use>
     </svg>
     <span class="recipe__info-data recipe__info-data--people">${
-      this.#data.servings
+      this._data.servings
     }</span>
     <span class="recipe__info-text">servings</span>
     
@@ -86,7 +82,7 @@ class RecipeAreaView {
     <div class="recipe__ingredients">
     <h2 class="heading--2">Recipe ingredients</h2>
     <ul class="recipe__ingredient-list">
-    ${this.#data.ingredients.map(this.#generateMarkup_Ingredients).join('')}
+    ${this._data.ingredients.map(this._generateMarkup_Ingredients).join('')}
       
       <li class="recipe__ingredient">
       <svg class="recipe__icon">
@@ -116,12 +112,12 @@ class RecipeAreaView {
       <h2 class="heading--2">How to cook it</h2>
       <p class="recipe__directions-text">
       This recipe was carefully designed and tested by
-      <span class="recipe__publisher">${this.#data.publisher}</span>. Please
+      <span class="recipe__publisher">${this._data.publisher}</span>. Please
       check out directions at their website.
       </p>
       <a
       class="btn--small recipe__btn"
-      href="${this.#data.sourceUrl}"
+      href="${this._data.source_url}"
       target="_blank"
       >
       <span>Directions</span>
@@ -133,41 +129,6 @@ class RecipeAreaView {
       `;
   }
   //public API
-
-  renderError(errorMessage) {
-    const markup = `      
-    <div class="error">
-        <div>
-          <svg>
-            <use href="src/img/${icons}#icon-alert-triangle"></use>
-          </svg>
-        </div>
-        <p>${errorMessage}</p>
-    </div>`;
-
-    //clear the spinner
-    this.#clear();
-    this.#parentElement.insertAdjacentHTML('afterbegin', markup);
-  }
-  renderRecipeArea(data) {
-    this.#data = data;
-
-    this.#clear();
-    this.#parentElement.insertAdjacentHTML(
-      'afterbegin',
-      this.#generateMarkup_Recipe()
-    );
-  }
-  renderSpinner() {
-    const markup = ` 
-    <div class="spinner">
-    <svg>
-    <use href="${icons}#icon-loader"></use>
-    </svg>
-    </div>`;
-    this.#parentElement.innerHTML = '';
-    this.#parentElement.insertAdjacentHTML('afterbegin', markup);
-  }
 
   //Publisher
   addHandlerDom(handlder) {

@@ -24,10 +24,13 @@ export const loadRecipeList = async function (keyword) {
   try {
     //console.log(keyword);
     const data = await getJson(`${API_URL}?search=${keyword}`);
+    if (data.results === 0)
+      throw new Error('No recipes found for your query! Please try again ;)');
 
     state.search.query = keyword;
     state.search.recipeList = data.data.recipes;
   } catch (error) {
-    throw err;
+    //console.log(error);
+    throw error;
   }
 };
