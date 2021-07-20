@@ -54,3 +54,11 @@ export const loadRecipeList = async function (keyword) {
 //   }
 //   return state.search.currentPage;
 // };
+
+export const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach(i => {
+    i.quantity = (i.quantity / state.recipe.servings) * newServings;
+  });
+  state.recipe.servings = newServings;
+  console.log(state.recipe);
+};

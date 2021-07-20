@@ -2,7 +2,6 @@ import * as model from './model.js';
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
 import recipeListView from './views/recipeListView';
-import { DIRECTION } from './config.js';
 import { PAGE_MAX_ITEMS } from './config.js';
 // for bable in the parcel to polyfill 'promise'
 import 'regenerator-runtime/runtime';
@@ -10,9 +9,9 @@ import 'regenerator-runtime/runtime';
 import 'core-js/stable';
 import searchView from './views/searchView.js';
 
-if (module.hot) {
-  module.hot.accept();
-}
+// if (module.hot) {
+//   module.hot.accept();
+// }
 // const recipeContainer = document.querySelector('.recipe');
 
 // https://forkify-api.herokuapp.com/v2
@@ -35,8 +34,14 @@ const controlRecipe = async function () {
     // send data to view
     recipeView.render(model.state.recipe);
   } catch (error) {
+    console.error(error);
     recipeView.renderError(error.message);
   }
+};
+
+const controlServings = function (newServings) {
+  model.updateServings(newServings);
+  recipeView.render(model.state.recipe);
 };
 
 /**load search results, if > PAGE_MAX_ITEMS, do pagination
@@ -169,7 +174,11 @@ const init = function () {
   searchView.addHandlerToSearchBar(controlSearchResults);
 
   //add
-  recipeView.addHandlerDom(controlRecipe);
+  recipeView.addHandlerWindow(controlRecipe);
+
+  recipeView.addHandlerBtns(controlServings);
+
+  //5ed6604591c37cdc054bcb44
 };
 
 init();

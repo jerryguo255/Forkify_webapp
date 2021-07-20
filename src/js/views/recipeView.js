@@ -54,12 +54,16 @@ class RecipeAreaView extends View {
     <span class="recipe__info-text">servings</span>
     
     <div class="recipe__info-buttons">
-    <button class="btn--tiny btn--increase-servings">
+    <button class="btn--tiny btn--updating-servings" data-servings="${
+      this._data.servings - 1
+    }">
     <svg>
     <use href="${icons}#icon-minus-circle"></use>
     </svg>
     </button>
-    <button class="btn--tiny btn--increase-servings">
+    <button class="btn--tiny btn--updating-servings" data-servings="${
+      this._data.servings + 1
+    }">
     <svg>
     <use href="${icons}#icon-plus-circle"></use>
     </svg>
@@ -84,27 +88,6 @@ class RecipeAreaView extends View {
     <ul class="recipe__ingredient-list">
     ${this._data.ingredients.map(this._generateMarkup_Ingredients).join('')}
       
-      <li class="recipe__ingredient">
-      <svg class="recipe__icon">
-      <use href="${icons}#icon-check"></use>
-      </svg>
-      <div class="recipe__quantity">1000</div>
-      <div class="recipe__description">
-      <span class="recipe__unit">g</span>
-      pasta
-      </div>
-      </li>
-      
-      <li class="recipe__ingredient">
-      <svg class="recipe__icon">
-      <use href="${icons}#icon-check"></use>
-      </svg>
-      <div class="recipe__quantity">0.5</div>
-      <div class="recipe__description">
-      <span class="recipe__unit">cup</span>
-      ricotta cheese
-      </div>
-      </li>
       </ul>
       </div>
       
@@ -131,10 +114,22 @@ class RecipeAreaView extends View {
   //public API
 
   //Publisher
-  addHandlerDom(handlder) {
+  addHandlerBtns(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--updating-servings');
+      if (!btn) return;
+
+      if (btn.dataset.servings < 1 || btn.dataset.servings > 10) return;
+
+      handler(+btn.dataset.servings);
+      //handler();
+    });
+  }
+
+  addHandlerWindow(handler) {
     //Publish–subscribe pattern
     //listen hashchange and load event
-    ['hashchange', 'load'].forEach(v => window.addEventListener(v, handlder));
+    ['hashchange', 'load'].forEach(v => window.addEventListener(v, handler));
   }
 }
 export default recipeAreaView = new RecipeAreaView();
