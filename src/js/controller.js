@@ -60,13 +60,13 @@ const controlSearchResults = async function () {
     const itemAmount = state.recipeList.length;
 
     const getPageAmount = function () {
-      //console.log(itemAmount);
-      const pageAmount =
-        itemAmount % PAGE_MAX_ITEMS == 0
-          ? Math.floor(itemAmount / PAGE_MAX_ITEMS)
-          : Math.floor(itemAmount / PAGE_MAX_ITEMS) + 1;
+      // const pageAmount =
+      //   itemAmount % PAGE_MAX_ITEMS == 0
+      //     ? Math.floor(itemAmount / PAGE_MAX_ITEMS)
+      //     : Math.floor(itemAmount / PAGE_MAX_ITEMS) + 1;
 
-      return pageAmount;
+      //     return pageAmount;
+      return Math.ceil(itemAmount / PAGE_MAX_ITEMS);
     };
     const pageAmount = getPageAmount();
 
@@ -92,11 +92,11 @@ const controlSearchResults = async function () {
       state.formatedRecipeList = formatedList;
     };
 
-    const renderWithPageBtns = function () {
+    const renderRecipes = function () {
       switch (state.currentPage) {
         //first page
         case 1:
-          recipeListView.setNextBtnText(state.currentPage - 1);
+          recipeListView.setPrevBtnText(state.currentPage - 1);
           recipeListView.setNextBtnText(state.currentPage + 1);
           recipeListView.showNextBtn();
           recipeListView.hidePrevBtn();
@@ -104,7 +104,7 @@ const controlSearchResults = async function () {
         //last page
         case pageAmount:
           recipeListView.setPrevBtnText(state.currentPage - 1);
-          recipeListView.setPrevBtnText(state.currentPage + 1);
+          recipeListView.setNextBtnText(state.currentPage + 1);
           recipeListView.showPrevBtn();
           recipeListView.hideNextBtn();
           break;
@@ -129,18 +129,18 @@ const controlSearchResults = async function () {
 
       formatedRecipeList();
       state.currentPage = 1;
-      renderWithPageBtns();
+      renderRecipes();
       // results within one page
 
       const controlPaginationPrev = function () {
         state.currentPage--;
-        renderWithPageBtns();
+        renderRecipes();
 
         //prev page
       };
       const controlPaginationNext = function () {
         state.currentPage++;
-        renderWithPageBtns();
+        renderRecipes();
 
         // next page
       };

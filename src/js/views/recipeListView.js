@@ -9,9 +9,10 @@ class RecipeListView extends View {
   _nextBtnText = this._nextBtn.querySelector('span');
 
   _generateMarkup() {
-    const html = this._data.map(
-      recipe => ` 
-    <li class="preview">
+    const html = this._data
+      .map(
+        recipe =>
+          `<li class="preview">
         <a class="preview__link "  href="#${recipe.id}" >
          <figure class="preview__fig">
            <img src="${recipe.image_url}" alt="${recipe.title}" crossorigin/>
@@ -22,8 +23,8 @@ class RecipeListView extends View {
             </div>
         </a>
      </li>`
-    );
-
+      )
+      .join(' ');
     return html;
     // const markup = ;
     // markup.join();
