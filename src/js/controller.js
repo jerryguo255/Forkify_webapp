@@ -22,7 +22,6 @@ const controlRecipe = async function () {
 
     //render a spinner first , while getting data
     recipeView.renderSpinner();
-
     //move next only when loadRecipe finished(get and load data in state)
     await model.loadRecipe(id);
 
@@ -37,7 +36,9 @@ const controlServings = function (newServings) {
   model.updateServings(newServings);
 
   //TODO shold be updating, instead of rendering whole page
-  recipeView.render(model.state.recipe);
+  recipeView.update(model.state.recipe);
+
+  // recipeView.render(model.state.recipe);
 };
 
 /**load search results, if > PAGE_MAX_ITEMS, do pagination
