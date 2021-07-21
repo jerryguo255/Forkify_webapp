@@ -1,5 +1,6 @@
 import { API_URL } from './config.js';
 import { getJson } from './helpers.js';
+import { PAGE_MAX_ITEMS } from './config.js';
 
 export const state = {
   recipe: {},
@@ -7,12 +8,20 @@ export const state = {
     recipeList: [],
     formatedRecipeList: [],
     query: '',
-    currentPage: 0,
     //currentPageList: [],
     // nextPage: [],
-    // currentPageNum: 1,
+    currentPage: 1,
     // maxPageNumber,
   },
+};
+
+export const getRecipesPage = function (pageNum) {
+  state.currentPage = pageNum;
+
+  const startIndex = (pageNum - 1) * PAGE_MAX_ITEMS;
+  const endIndex = pageNum * PAGE_MAX_ITEMS - 1;
+
+  return state.search.recipeList.slice(startIndex, endIndex);
 };
 export const loadRecipe = async function (recipeId) {
   try {
@@ -21,14 +30,13 @@ export const loadRecipe = async function (recipeId) {
     const { recipe } = data.data;
     state.recipe = recipe;
   } catch (err) {
-    //console.error(`${err} 🐞`);
+    // console.error(`${err} 🐞`);
     throw err;
   }
 };
 
 export const loadRecipeList = async function (keyword) {
   try {
-    //console.log(keyword);
     state.search.query = keyword;
     const data = await getJson(`${API_URL}?search=${keyword}`);
     if (data.results === 0)
@@ -60,5 +68,5 @@ export const updateServings = function (newServings) {
     i.quantity = (i.quantity / state.recipe.servings) * newServings;
   });
   state.recipe.servings = newServings;
-  console.log(state.recipe);
+  //console.log(state.recipe);
 };

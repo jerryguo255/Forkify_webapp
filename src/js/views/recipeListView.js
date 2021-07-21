@@ -1,12 +1,11 @@
-import icons from 'url:../../img/icons.svg';
 import View from './view';
 
 class RecipeListView extends View {
   _parentElement = document.querySelector('.results');
-  _prevBtn = document.querySelector('.pagination__btn--prev');
-  _nextBtn = document.querySelector('.pagination__btn--next');
-  _prevBtnText = this._prevBtn.querySelector('span');
-  _nextBtnText = this._nextBtn.querySelector('span');
+  // _prevBtn = document.querySelector('.pagination__btn--prev');
+  // _nextBtn = document.querySelector('.pagination__btn--next');
+  // _prevBtnText = this._prevBtn.querySelector('span');
+  // _nextBtnText = this._nextBtn.querySelector('span');
 
   _generateMarkup() {
     const html = this._data
@@ -32,33 +31,33 @@ class RecipeListView extends View {
     //return markup;
   }
 
-  addHandlerBtns(prevHandler, nextHandler) {
-    this._prevBtn.addEventListener('click', prevHandler);
-    this._nextBtn.addEventListener('click', nextHandler);
-    //maintain two queue or stack
-  }
+  // addHandlerBtns(prevHandler, nextHandler) {
+  //   this._prevBtn.addEventListener('click', prevHandler);
+  //   this._nextBtn.addEventListener('click', nextHandler);
+  //   //maintain two queue or stack
+  // }
 
-  hidePrevBtn() {
-    this._prevBtn.classList.add('hidden');
-  }
-  showPrevBtn() {
-    this._prevBtn.classList.remove('hidden');
-  }
-  hideNextBtn() {
-    this._nextBtn.classList.add('hidden');
-  }
-  showNextBtn() {
-    this._nextBtn.classList.remove('hidden');
-  }
+  // hidePrevBtn() {
+  //   this._prevBtn.classList.add('hidden');
+  // }
+  // showPrevBtn() {
+  //   this._prevBtn.classList.remove('hidden');
+  // }
+  // hideNextBtn() {
+  //   this._nextBtn.classList.add('hidden');
+  // }
+  // showNextBtn() {
+  //   this._nextBtn.classList.remove('hidden');
+  // }
 
-  setPrevBtnText(number) {
-    this._prevBtnText.textContent = `Page ${number}`;
-    ///
-  }
-  setNextBtnText(number) {
-    this._nextBtnText.textContent = `Page ${number}`;
-    // this._prevBtn.childNodes[0].textContent = number.toString();
-  }
+  // setPrevBtnText(number) {
+  //   this._prevBtnText.textContent = `Page ${number}`;
+  //   ///
+  // }
+  // setNextBtnText(number) {
+  //   this._nextBtnText.textContent = `Page ${number}`;
+  //   // this._prevBtn.childNodes[0].textContent = number.toString();
+  // }
 
   //   activeRecipe(id) {}
 }

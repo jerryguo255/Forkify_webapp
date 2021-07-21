@@ -8,16 +8,11 @@ import 'regenerator-runtime/runtime';
 // for bable in the parcel to polyfill other ES 6 and above features
 import 'core-js/stable';
 import searchView from './views/searchView.js';
+import paginationView from './views/paginationView.js';
 
 // if (module.hot) {
 //   module.hot.accept();
 // }
-// const recipeContainer = document.querySelector('.recipe');
-
-// https://forkify-api.herokuapp.com/v2
-
-///////////////////////////////////////
-//https://forkify-api.herokuapp.com/api/v2/recipes/:id
 
 const controlRecipe = async function () {
   try {
@@ -34,13 +29,14 @@ const controlRecipe = async function () {
     // send data to view
     recipeView.render(model.state.recipe);
   } catch (error) {
-    console.error(error);
     recipeView.renderError(error.message);
   }
 };
 
 const controlServings = function (newServings) {
   model.updateServings(newServings);
+
+  //TODO shold be updating, instead of rendering whole page
   recipeView.render(model.state.recipe);
 };
 
@@ -49,7 +45,7 @@ const controlServings = function (newServings) {
  * @returns
  */
 const controlSearchResults = async function () {
-  let state = model.state.search;
+  //let state = model.state.search;
   try {
     //get search query
     const queryKeywords = searchView.getQuery();
@@ -60,113 +56,123 @@ const controlSearchResults = async function () {
     // load search results
     await model.loadRecipeList(queryKeywords);
 
-    //calc page amount
+    //render first page of recipe list
+    recipeListView.render(model.getRecipesPage(1));
 
-    const itemAmount = state.recipeList.length;
+    //render pagination buttons
+    paginationView.render(model.state.search);
 
-    const getPageAmount = function () {
-      // const pageAmount =
-      //   itemAmount % PAGE_MAX_ITEMS == 0
-      //     ? Math.floor(itemAmount / PAGE_MAX_ITEMS)
-      //     : Math.floor(itemAmount / PAGE_MAX_ITEMS) + 1;
+    // const itemAmount = state.recipeList.length;
 
-      //     return pageAmount;
-      return Math.ceil(itemAmount / PAGE_MAX_ITEMS);
-    };
-    const pageAmount = getPageAmount();
+    // const getPageAmount = function () {
+    //   // const pageAmount =
+    //   //   itemAmount % PAGE_MAX_ITEMS == 0
+    //   //     ? Math.floor(itemAmount / PAGE_MAX_ITEMS)
+    //   //     : Math.floor(itemAmount / PAGE_MAX_ITEMS) + 1;
 
-    const formatedRecipeList = function () {
-      const formatedList = [];
+    //   //     return pageAmount;
+    //   return Math.ceil(itemAmount / PAGE_MAX_ITEMS);
+    // };
+    // const pageAmount = getPageAmount();
 
-      //load pages
-      for (let i = 0; i < pageAmount; i++) {
-        const page = [];
-        let pageItemsAmount = PAGE_MAX_ITEMS;
+    // const formatedRecipeList = function () {
+    //   const formatedList = [];
 
-        //if it's last page
-        if (i === pageAmount - 1) {
-          pageItemsAmount = state.recipeList.length;
-        }
-        //load items to page
-        for (let j = 0; j < pageItemsAmount; j++) {
-          page.push(state.recipeList.pop());
-        }
+    //   //load pages
+    //   for (let i = 0; i < pageAmount; i++) {
+    //     const page = [];
+    //     let pageItemsAmount = PAGE_MAX_ITEMS;
 
-        formatedList.push(page);
-      }
-      state.formatedRecipeList = formatedList;
-    };
+    //     //if it's last page
+    //     if (i === pageAmount - 1) {
+    //       pageItemsAmount = state.recipeList.length;
+    //     }
+    //     //load items to page
+    //     for (let j = 0; j < pageItemsAmount; j++) {
+    //       page.push(state.recipeList.pop());
+    //     }
 
-    const renderRecipes = function () {
-      switch (state.currentPage) {
-        //first page
-        case 1:
-          recipeListView.setPrevBtnText(state.currentPage - 1);
-          recipeListView.setNextBtnText(state.currentPage + 1);
-          recipeListView.showNextBtn();
-          recipeListView.hidePrevBtn();
-          break;
-        //last page
-        case pageAmount:
-          recipeListView.setPrevBtnText(state.currentPage - 1);
-          recipeListView.setNextBtnText(state.currentPage + 1);
-          recipeListView.showPrevBtn();
-          recipeListView.hideNextBtn();
-          break;
-        default:
-          recipeListView.setPrevBtnText(state.currentPage - 1);
-          recipeListView.setNextBtnText(state.currentPage + 1);
-          recipeListView.showPrevBtn();
-          recipeListView.showNextBtn();
+    //     formatedList.push(page);
+    //   }
+    //   state.formatedRecipeList = formatedList;
+    // };
 
-          break;
-      }
-      recipeListView.render(state.formatedRecipeList[state.currentPage - 1]);
-    };
+    // const renderRecipes = function () {
+    //   switch (state.currentPage) {
+    //     //first page
+    //     case 1:
+    //       recipeListView.setPrevBtnText(state.currentPage - 1);
+    //       recipeListView.setNextBtnText(state.currentPage + 1);
+    //       recipeListView.showNextBtn();
+    //       recipeListView.hidePrevBtn();
+    //       break;
+    //     //last page
+    //     case pageAmount:
+    //       recipeListView.setPrevBtnText(state.currentPage - 1);
+    //       recipeListView.setNextBtnText(state.currentPage + 1);
+    //       recipeListView.showPrevBtn();
+    //       recipeListView.hideNextBtn();
+    //       break;
+    //     default:
+    //       recipeListView.setPrevBtnText(state.currentPage - 1);
+    //       recipeListView.setNextBtnText(state.currentPage + 1);
+    //       recipeListView.showPrevBtn();
+    //       recipeListView.showNextBtn();
+
+    //       break;
+    //   }
+    //   recipeListView.render(state.formatedRecipeList[state.currentPage - 1]);
+    // };
 
     //////////process start
 
     //get amount of items
 
     //paginate or not
-    if (itemAmount > PAGE_MAX_ITEMS) {
-      //distribute all items
+    // if (itemAmount > PAGE_MAX_ITEMS) {
+    //   //distribute all items
 
-      formatedRecipeList();
-      state.currentPage = 1;
-      renderRecipes();
-      // results within one page
+    //   formatedRecipeList();
+    //   state.currentPage = 1;
+    //   renderRecipes();
+    //   // results within one page
 
-      const controlPaginationPrev = function () {
-        state.currentPage--;
-        renderRecipes();
+    //   const controlPaginationPrev = function () {
+    //     state.currentPage--;
+    //     renderRecipes();
 
-        //prev page
-      };
-      const controlPaginationNext = function () {
-        state.currentPage++;
-        renderRecipes();
+    //     //prev page
+    //   };
+    //   const controlPaginationNext = function () {
+    //     state.currentPage++;
+    //     renderRecipes();
 
-        // next page
-      };
-      recipeListView.addHandlerBtns(
-        controlPaginationPrev,
-        controlPaginationNext
-      );
-    } else {
-      //render
-      recipeListView.render(state.recipeList);
-    }
-    //model.getCurrentPageRecipes();
-    // recipeListView.toggleSetNextBtn(5);
-
-    // 空容器占位
+    //     // next page
+    //   };
+    //   recipeListView.addHandlerBtns(
+    //     controlPaginationPrev,
+    //     controlPaginationNext
+    //   );
+    // } else {
+    //   //render
+    //   recipeListView.render(state.recipeList);
+    // }
+    // //model.getCurrentPageRecipes();
+    // // recipeListView.toggleSetNextBtn(5);
   } catch (error) {
     console.error(error);
     recipeListView.renderError(error.message);
   }
 };
 
+const controlPagination = function () {
+  // model.state;
+
+  recipeListView.render(model.getRecipesPage(model.state.search.currentPage));
+
+  //render pagination buttons
+  paginationView.render(model.state.search);
+};
 const init = function () {
   //Publish–subscribe pattern
   //subscriber
@@ -178,7 +184,7 @@ const init = function () {
 
   recipeView.addHandlerBtns(controlServings);
 
-  //5ed6604591c37cdc054bcb44
+  paginationView.addHandlerPagination(controlPagination);
 };
 
 init();

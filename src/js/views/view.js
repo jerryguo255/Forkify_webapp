@@ -21,7 +21,7 @@ export default class View {
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
   }
 
-  renderMessage(message) {
+  renderMessage(message = 'view gets wrong') {
     const markup = `
      <div class="message">
     <div>
@@ -37,8 +37,12 @@ export default class View {
   }
 
   render(data) {
+    if (!data || (Array.isArray(data) && data.length === 0))
+      return this.renderError();
+
     this._data = data;
 
+    //console.log(this._data);
     this._clear();
     this._parentElement.insertAdjacentHTML(
       'afterbegin',

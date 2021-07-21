@@ -115,7 +115,9 @@ class RecipeAreaView extends View {
 
   //Publisher
   addHandlerBtns(handler) {
+    //event delegation
     this._parentElement.addEventListener('click', function (e) {
+      //get target btns
       const btn = e.target.closest('.btn--updating-servings');
       if (!btn) return;
 

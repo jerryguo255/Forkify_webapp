@@ -14,6 +14,11 @@ const timeout = function (s) {
   });
 };
 
+// https://forkify-api.herokuapp.com/v2
+
+///////////////////////////////////////
+//https://forkify-api.herokuapp.com/api/v2/recipes/:id
+
 //get Json data
 export const getJson = async function (url) {
   try {
