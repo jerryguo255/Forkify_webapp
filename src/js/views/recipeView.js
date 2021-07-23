@@ -26,22 +26,26 @@ class RecipeAreaView extends View {
   _generateMarkup() {
     return `
     <figure class="recipe__fig">
-    <img src="${
-      this._data.image_url
-    }" alt="Tomato" class="recipe__img" crossorigin/>
-    <h1 class="recipe__title">
+        <img
+          src="${this._data.image_url}"
+          alt="Tomato"
+          class="recipe__img"
+          crossorigin
+        />
+  <h1 class="recipe__title">
     <span>${this._data.title}</span>
-    </h1>
-    </figure>
-    
-    <div class="recipe__details">
-    <div class="recipe__info">
-    <svg class="recipe__info-icon">
+  </h1>
+</figure>
+
+
+<div class="recipe__details">
+ <div class="recipe__info">
+  <svg class="recipe__info-icon">
     <use href="${icons}#icon-clock"></use>
-    </svg>
-    <span class="recipe__info-data recipe__info-data--minutes">${
-      this._data.cooking_time
-    }</span>
+  </svg>
+ <span class="recipe__info-data recipe__info-data--minutes">
+ ${this._data.cooking_time}
+ </span>
     <span class="recipe__info-text">minutes</span>
     </div>
     <div class="recipe__info">
@@ -71,16 +75,21 @@ class RecipeAreaView extends View {
     </div>
     </div>
     
-    <div class="recipe__user-generated">
+  <div class="recipe__user-generated">
     <svg>
-    <oinuse href="${icons}#icon-user"></use>
+      <use href="${icons}#icon-user"></use>
     </svg>
-    </div>
-    <button class="btn--round">
+  </div>
+  <button class="btn--round btn--bookmark">
     <svg class="">
-    <use href="${icons}#icon-bookmark-fill"></use>
+      <use href="${icons}#icon-bookmark${
+      this._data.marked ? '-fill' : ''
+    }"></use>
     </svg>
-    </button>
+  </button>
+
+  
+  
     </div>
     
     <div class="recipe__ingredients">
@@ -132,6 +141,19 @@ class RecipeAreaView extends View {
     //Publish–subscribe pattern
     //listen hashchange and load event
     ['hashchange', 'load'].forEach(v => window.addEventListener(v, handler));
+  }
+
+  addHandlerBookmarkBtn(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--bookmark');
+      if (!btn) return;
+
+      console.log(btn);
+      //contrtol bookmark
+      //if alread marked, unmark
+      //if not marked
+      handler();
+    });
   }
 }
 export default recipeAreaView = new RecipeAreaView();

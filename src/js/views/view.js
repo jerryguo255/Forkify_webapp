@@ -15,7 +15,7 @@ export default class View {
         </div>
         <p>${errorMessage}</p>
     </div>`;
-
+    console.error(errorMessage);
     //clear the spinner
     this._clear();
     this._parentElement.insertAdjacentHTML('afterbegin', markup);
@@ -92,13 +92,16 @@ export default class View {
 
       // also replace data attributes
       if (isDifferentFromOtherNode) {
+        // console.log(curr.attributes[0]);
         //traverse all attributes of the node
         Array.from(newEl.attributes).forEach((attr, i) => {
           //check if the attribute name start with ‘data’
-          if (attr.name.slice(0, 4) === 'data') {
-            //replace it with new value
-            curr.setAttribute(attr.name, attr.value);
-          }
+          // if (attr.name.slice(0, 4) === 'data') {
+          //replace it with new value
+
+          //replace all attribute include class
+          curr.setAttribute(attr.name, attr.value);
+          //}
         });
       }
     });

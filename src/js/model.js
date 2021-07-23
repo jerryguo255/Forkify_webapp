@@ -4,9 +4,10 @@ import { PAGE_MAX_ITEMS } from './config.js';
 
 export const state = {
   recipe: {},
+  bookmarkList: [],
   search: {
     recipeList: [],
-    formatedRecipeList: [],
+    // formatedRecipeList: [],
     query: '',
     //currentPageList: [],
     // nextPage: [],
@@ -15,6 +16,19 @@ export const state = {
   },
 };
 
+//add current recipe to bookmarkList
+export const addRecipe = function () {
+  state.bookmarkList.push(state.recipe);
+};
+
+//remove current recipe to bookmarkList
+export const removeRecipe = function () {
+  // state.bookmarkList = state.bookmarkList.filter(v => v.id !== state.recipe.id);
+  state.bookmarkList.splice(
+    state.bookmarkList.findIndex(v => v.id === state.recipe.id),
+    1
+  );
+};
 export const getRecipesPage = function (pageNum) {
   state.currentPage = pageNum;
 
@@ -28,9 +42,16 @@ export const loadRecipe = async function (recipeId) {
     const data = await getJson(`${API_URL}/${recipeId}`);
     // console.log(data);
     const { recipe } = data.data;
+
+    console.log(state.bookmarkList);
+    //if the recipe is alread on bookmark list, load it,
+    if (state.bookmarkList.some(v => v.id === recipe.id)) {
+      recipe.marked = true;
+    }
     state.recipe = recipe;
+    //if does not find it, load new one
   } catch (err) {
-    // console.error(`${err} 🐞`);
+    console.error(`${err} 🐞`);
     throw err;
   }
 };
@@ -43,7 +64,8 @@ export const loadRecipeList = async function (keyword) {
       throw new Error('No recipes found for your query! Please try again ;)');
 
     state.search.recipeList = data.data.recipes;
-
+    //set to first page for new searching
+    state.search.currentPage = 1;
     // check
   } catch (error) {
     //console.log(error);

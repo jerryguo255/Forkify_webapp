@@ -2,7 +2,7 @@ import * as model from './model.js';
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
 import recipeListView from './views/recipeListView';
-import { PAGE_MAX_ITEMS } from './config.js';
+import bookmarkListView from './views/bookmarkListView.js';
 // for bable in the parcel to polyfill 'promise'
 import 'regenerator-runtime/runtime';
 // for bable in the parcel to polyfill other ES 6 and above features
@@ -22,7 +22,21 @@ const controlRecipe = async function () {
 
     //render a spinner first , while getting data
     recipeView.renderSpinner();
-    //move next only when loadRecipe finished(get and load data in state)
+
+    //check if there is recipelist loaded
+    if (model.state.search.recipeList.length !== 0) {
+      //update background colour of selected item on recipe list
+      recipeListView.update(
+        model.getRecipesPage(model.state.search.currentPage)
+      );
+    }
+
+    //check if there is bookmarklist loaded
+    if (model.state.bookmarkList.length !== 0) {
+      //update background colour of selected item on recipe list
+      bookmarkListView.update(model.state.bookmarkList);
+    }
+
     await model.loadRecipe(id);
 
     // send data to view
@@ -35,7 +49,7 @@ const controlRecipe = async function () {
 const controlServings = function (newServings) {
   model.updateServings(newServings);
 
-  //TODO shold be updating, instead of rendering whole page
+  // shold be updating, instead of rendering whole page
   recipeView.update(model.state.recipe);
 
   // recipeView.render(model.state.recipe);
@@ -166,6 +180,25 @@ const controlSearchResults = async function () {
   }
 };
 
+const controlRecipeBookmark = function () {
+  //when bookmark btn click, execute this handler
+  //compare stored bookmarkList
+  if (!model.state.recipe.marked) {
+    model.state.recipe.marked = true;
+    model.addRecipe();
+  } else {
+    model.state.recipe.marked = false;
+    model.removeRecipe();
+  }
+  recipeView.update(model.state.recipe);
+
+  model.state.bookmarkList.length !== 0
+    ? bookmarkListView.render(model.state.bookmarkList)
+    : bookmarkListView.renderMessage(bookmarkListView._errorMessage);
+  //
+  //console.log(model.state.bookmarkList);
+};
+
 const controlPagination = function () {
   // model.state;
 
@@ -184,6 +217,8 @@ const init = function () {
   recipeView.addHandlerWindow(controlRecipe);
 
   recipeView.addHandlerBtns(controlServings);
+
+  recipeView.addHandlerBookmarkBtn(controlRecipeBookmark);
 
   paginationView.addHandlerPagination(controlPagination);
 };
