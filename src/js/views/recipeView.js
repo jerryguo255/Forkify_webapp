@@ -148,7 +148,6 @@ class RecipeAreaView extends View {
       const btn = e.target.closest('.btn--bookmark');
       if (!btn) return;
 
-      console.log(btn);
       //contrtol bookmark
       //if alread marked, unmark
       //if not marked

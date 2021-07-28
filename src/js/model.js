@@ -19,6 +19,7 @@ export const state = {
 //add current recipe to bookmarkList
 export const addRecipe = function () {
   state.bookmarkList.push(state.recipe);
+  persistBookmarkList();
 };
 
 //remove current recipe to bookmarkList
@@ -28,7 +29,18 @@ export const removeRecipe = function () {
     state.bookmarkList.findIndex(v => v.id === state.recipe.id),
     1
   );
+  persistBookmarkList();
 };
+
+const persistBookmarkList = () =>
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarkList));
+
+const init = function () {
+  const storage = localStorage.getItem('bookmarks');
+  state.bookmarkList = JSON.parse(storage);
+};
+init();
+
 export const getRecipesPage = function (pageNum) {
   state.currentPage = pageNum;
 
@@ -43,7 +55,6 @@ export const loadRecipe = async function (recipeId) {
     // console.log(data);
     const { recipe } = data.data;
 
-    console.log(state.bookmarkList);
     //if the recipe is alread on bookmark list, load it,
     if (state.bookmarkList.some(v => v.id === recipe.id)) {
       recipe.marked = true;

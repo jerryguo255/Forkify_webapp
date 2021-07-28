@@ -23,7 +23,6 @@ class PaginationView extends View {
     }
 
     // other page
-    console.log('other ');
     return this._generateBtnsPrevMarkup() + '' + this._generateBtnsNextMarkup();
   }
 
@@ -58,7 +57,6 @@ class PaginationView extends View {
         this._data.currentPage =
           e.target.closest('.btn--inline').dataset.gotoPage;
         handler();
-        console.log(this._data.currentPage);
       }.bind(this)
     );
   }

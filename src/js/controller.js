@@ -9,6 +9,7 @@ import 'regenerator-runtime/runtime';
 import 'core-js/stable';
 import searchView from './views/searchView.js';
 import paginationView from './views/paginationView.js';
+import addRecipeView from './views/addRecipeView.js';
 
 // if (module.hot) {
 //   module.hot.accept();
@@ -34,7 +35,7 @@ const controlRecipe = async function () {
     //check if there is bookmarklist loaded
     if (model.state.bookmarkList.length !== 0) {
       //update background colour of selected item on recipe list
-      bookmarkListView.update(model.state.bookmarkList);
+      bookmarkListView.render(model.state.bookmarkList);
     }
 
     await model.loadRecipe(id);
@@ -207,13 +208,25 @@ const controlPagination = function () {
   //render pagination buttons
   paginationView.render(model.state.search);
 };
+
+// AR7 set handlers
+const showAddRecipeForm = function () {
+  addRecipeView.showForm();
+};
+const closeAddRecipeForm = function () {
+  addRecipeView.closeForm();
+};
+
+//AR7-03 set invoked handler
+
+const controlRecipeForm = function () {};
+
 const init = function () {
   //Publish–subscribe pattern
   //subscriber
 
   searchView.addHandlerToSearchBar(controlSearchResults);
 
-  //add
   recipeView.addHandlerWindow(controlRecipe);
 
   recipeView.addHandlerBtns(controlServings);
@@ -221,7 +234,11 @@ const init = function () {
   recipeView.addHandlerBookmarkBtn(controlRecipeBookmark);
 
   paginationView.addHandlerPagination(controlPagination);
+
+  //AR7 add Event handlers to elements
+  addRecipeView.addHandlerNavBtn(showAddRecipeForm);
+  addRecipeView.addHandlerClose(closeAddRecipeForm);
+  addRecipeView.addHandlerFormSubmit(controlRecipeForm);
 };
 
 init();
-//#endregion
