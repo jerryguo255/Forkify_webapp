@@ -12,36 +12,33 @@ class AddRecipeView extends View {
     this._overlayEl.classList.add('hidden');
   }
 
-  //AR7-04 open form window
   showForm() {
     this._parentElement.classList.remove('hidden');
     this._overlayEl.classList.remove('hidden');
   }
 
-  //#region AR7 add handlers to elements
+  // AR7 add handlers to elements
+  //AR7-01 open or close form window
   addHandlerNavBtn(handler) {
-    //AR7-01 open form window
     this._addRecipeNavBtn.addEventListener('click', handler);
   }
   addHandlerClose(handler) {
-    //AR7-02 close form window
     this._closeBtn.addEventListener('click', handler);
     this._overlayEl.addEventListener('click', handler);
   }
 
+  //AR7-02 invoke handler with form data when user submit
   addHandlerFormSubmit(handler) {
-    //AR7-03 when submitting, invoke handler with form data
     this._formElement.addEventListener('submit', function (e) {
       e.preventDefault();
       const [...formData] = new FormData(this);
       const data = Object.fromEntries(formData);
-      console.log(data);
+      handler(data);
     });
     // this._formElement.addEventListener('submit', function (e) {
     //   e.preventDefault();
     //   console.log('sss');
     // });
   }
-  //#endregion
 }
 export default addRecipeView = new AddRecipeView();

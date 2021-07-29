@@ -103,3 +103,33 @@ export const updateServings = function (newServings) {
   state.recipe.servings = newServings;
   //console.log(state.recipe);
 };
+
+export const uploadRecipe = async function (newRecipe) {
+  //AR7-04 format conversion
+  // const ingredients = Object.entries(newRecipe)
+  //   .filter(v => v[0].slice(0, 5) === 'ingre' && v[1] !== '')
+  //   .map(v => {
+  //     const arr = v[1].split(',');
+  //     return {
+  //       quantity: arr[0] ? Number(arr[0]) : null,
+  //       unit: arr[1],
+  //       description: arr[2],
+  //     };
+  //   });
+  //refactor
+  try {
+    const ingredients = Object.entries(newRecipe)
+      .filter(v => v[0].startsWith('ingredient') && v[1] !== '')
+      .map(v => {
+        const ingArr = v[1].replaceAll(' ', '');
+        if (ingArr.length < 3) throw new Error('🐞 Format error!');
+        const [quantity, unit, description] = ingArr.split(',');
+        return { quantity: quantity ? +quantity : null, unit, description };
+      });
+    console.log(ingredients);
+  } catch (error) {
+    throw error;
+  }
+  // console.log(newRecipe);
+  // console.log(ingredients);
+};
