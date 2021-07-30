@@ -43,3 +43,24 @@ export const getJson = async function (url) {
     throw err;
   }
 };
+
+export const postJson = async function (url, jsonData) {
+  try {
+    const data = fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonData),
+    });
+
+    const res = await Promise.race([timeout(TIMEOUT_SEC), data]);
+    const resData = await res.json();
+    if (!res.ok)
+      throw new Error(`🐞 ${res.status} ${res.statusText}--${resData.message}`);
+
+    return resData;
+  } catch (err) {
+    throw err;
+  }
+};

@@ -217,12 +217,14 @@ const closeAddRecipeForm = function () {
   addRecipeView.closeForm();
 };
 
-//AR7-03 set invoked handler
-
+//AR7-03 upload recipe
 const controlRecipeForm = async function (recipeData) {
   try {
-    await model.uploadRecipe(recipeData);
+    addRecipeView.renderSpinner();
     addRecipeView.closeForm();
+
+    const recipe = await model.uploadRecipe(recipeData);
+    console.log(recipe);
   } catch (error) {
     addRecipeView.renderError(error);
   }

@@ -1,6 +1,6 @@
 import { API_URL } from './config.js';
-import { getJson } from './helpers.js';
-import { PAGE_MAX_ITEMS } from './config.js';
+import { getJson, postJson } from './helpers.js';
+import { PAGE_MAX_ITEMS, POSTAPI_KEY } from './config.js';
 
 export const state = {
   recipe: {},
@@ -105,7 +105,7 @@ export const updateServings = function (newServings) {
 };
 
 export const uploadRecipe = async function (newRecipe) {
-  //AR7-04 format conversion
+  //format conversion
   // const ingredients = Object.entries(newRecipe)
   //   .filter(v => v[0].slice(0, 5) === 'ingre' && v[1] !== '')
   //   .map(v => {
@@ -116,8 +116,9 @@ export const uploadRecipe = async function (newRecipe) {
   //       description: arr[2],
   //     };
   //   });
-  //refactor
   try {
+    //AR7-04 format conversion
+    //convers ingredient
     const ingredients = Object.entries(newRecipe)
       .filter(v => v[0].startsWith('ingredient') && v[1] !== '')
       .map(v => {
@@ -126,10 +127,20 @@ export const uploadRecipe = async function (newRecipe) {
         const [quantity, unit, description] = ingArr.split(',');
         return { quantity: quantity ? +quantity : null, unit, description };
       });
-    console.log(ingredients);
+
+    //convers whole recipe to designate post object
+    const recipeArrWithoutIngrs = Object.entries(newRecipe).filter(
+      v => !v[0].startsWith('ingr')
+    );
+    const recipeObj = Object.fromEntries(recipeArrWithoutIngrs);
+    recipeObj.ingredients = ingredients;
+
+    //AR7-05 post the obj to API
+    //https://forkify-api.herokuapp.com/api/v2/recipes?search=pizza&key=<insert your key>
+    return await postJson(`${API_URL}?key=${POSTAPI_KEY}`, recipeObj);
   } catch (error) {
     throw error;
   }
-  // console.log(newRecipe);
-  // console.log(ingredients);
+
+  const recipe = {};
 };
