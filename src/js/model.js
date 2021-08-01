@@ -5,6 +5,7 @@ import { PAGE_MAX_ITEMS, POSTAPI_KEY } from './config.js';
 export const state = {
   recipe: {},
   bookmarkList: [],
+  bookmark: [],
   search: {
     recipeList: [],
     // formatedRecipeList: [],
@@ -36,7 +37,9 @@ const persistBookmarkList = () =>
   localStorage.setItem('bookmarks', JSON.stringify(state.bookmarkList));
 
 const init = function () {
+  //LD6-01 load bookmarks from local storage
   const storage = localStorage.getItem('bookmarks');
+  if (!storage) return;
   state.bookmarkList = JSON.parse(storage);
 };
 init();
@@ -56,9 +59,14 @@ export const loadRecipe = async function (recipeId) {
     const { recipe } = data.data;
 
     //if the recipe is alread on bookmark list, load it,
-    if (state.bookmarkList.some(v => v.id === recipe.id)) {
+
+    if (
+      state.bookmarkList &&
+      state.bookmarkList.some(v => v.id === recipe.id)
+    ) {
       recipe.marked = true;
     }
+
     state.recipe = recipe;
     //if does not find it, load new one
   } catch (err) {
@@ -70,10 +78,14 @@ export const loadRecipe = async function (recipeId) {
 export const loadRecipeList = async function (keyword) {
   try {
     state.search.query = keyword;
-    const data = await getJson(`${API_URL}?search=${keyword}`);
+
+    //also search own recipe when loading
+    const data = await getJson(
+      `${API_URL}?search=${keyword}&key=${POSTAPI_KEY}`
+    );
     if (data.results === 0)
       throw new Error('No recipes found for your query! Please try again ;)');
-
+    //SR1-03 get recipes and store into model
     state.search.recipeList = data.data.recipes;
     //set to first page for new searching
     state.search.currentPage = 1;
@@ -97,10 +109,11 @@ export const loadRecipeList = async function (keyword) {
 // };
 
 export const updateServings = function (newServings) {
+  //AS4-04 update servings and ingredient amounts
+  state.recipe.servings = newServings;
   state.recipe.ingredients.forEach(i => {
     i.quantity = (i.quantity / state.recipe.servings) * newServings;
   });
-  state.recipe.servings = newServings;
   //console.log(state.recipe);
 };
 
@@ -117,7 +130,7 @@ export const uploadRecipe = async function (newRecipe) {
   //     };
   //   });
   try {
-    //AR7-04 format conversion
+    //AR7-04  converse form data to designate object
     //convers ingredient
     const ingredients = Object.entries(newRecipe)
       .filter(v => v[0].startsWith('ingredient') && v[1] !== '')
@@ -128,7 +141,7 @@ export const uploadRecipe = async function (newRecipe) {
         return { quantity: quantity ? +quantity : null, unit, description };
       });
 
-    //convers whole recipe to designate post object
+    //convers whole recipe to object
     const recipeArrWithoutIngrs = Object.entries(newRecipe).filter(
       v => !v[0].startsWith('ingr')
     );
@@ -136,11 +149,13 @@ export const uploadRecipe = async function (newRecipe) {
     recipeObj.ingredients = ingredients;
 
     //AR7-05 post the obj to API
-    //https://forkify-api.herokuapp.com/api/v2/recipes?search=pizza&key=<insert your key>
-    return await postJson(`${API_URL}?key=${POSTAPI_KEY}`, recipeObj);
+    const jsonData = await postJson(`${API_URL}?key=${POSTAPI_KEY}`, recipeObj);
+    const { recipe } = jsonData.data;
+
+    //AR7-06 set current recipe, and add to bookmark list
+    state.recipe = recipe;
+    addRecipe();
   } catch (error) {
     throw error;
   }
-
-  const recipe = {};
 };

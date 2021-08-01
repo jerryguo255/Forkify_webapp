@@ -25,11 +25,10 @@ class BookmarkListView extends View {
       .join(' ');
     return html;
   }
-  //   addHandlerBookmarkList(handler) {
-  //     this._parentElement.addEventListener('click', function (e) {
-  //       e.target.closest('');
-  //     });
-  //   }
+  //LD6-02 when websit load, changed invoke controlBookmarkList
+  addHandlerWindow(handler) {
+    window.addEventListener('load', handler);
+  }
 }
 
 export default bookmarkListView = new BookmarkListView();

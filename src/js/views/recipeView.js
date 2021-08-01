@@ -2,6 +2,7 @@
 import icons from 'url:../../img/icons.svg';
 import View from './view';
 import { Fraction } from 'fractional';
+import { MAX_SERVINGS, POSTAPI_KEY } from '../config.js';
 // import View from './view';
 
 class RecipeAreaView extends View {
@@ -14,6 +15,7 @@ class RecipeAreaView extends View {
     <use href="${icons}#icon-check"></use>
     </svg>
     <div class="recipe__quantity">${
+      //SD3-05 convers number to fraction before rendering
       ing.quantity ? new Fraction(ing.quantity).toString() : ''
     }</div>
     <div class="recipe__description">
@@ -59,6 +61,7 @@ class RecipeAreaView extends View {
     
     <div class="recipe__info-buttons">
     <button class="btn--tiny btn--updating-servings" data-servings="${
+      //AS4-01 set serving number to puls or minus btn
       this._data.servings - 1
     }">
     <svg>
@@ -75,7 +78,9 @@ class RecipeAreaView extends View {
     </div>
     </div>
     
-  <div class="recipe__user-generated">
+  <div class="recipe__user-generated  ${
+    this._data.key !== POSTAPI_KEY ? 'hidden' : ''
+  }">
     <svg>
       <use href="${icons}#icon-user"></use>
     </svg>
@@ -83,6 +88,7 @@ class RecipeAreaView extends View {
   <button class="btn--round btn--bookmark">
     <svg class="">
       <use href="${icons}#icon-bookmark${
+      //BS5-04 set icon before update
       this._data.marked ? '-fill' : ''
     }"></use>
     </svg>
@@ -95,6 +101,7 @@ class RecipeAreaView extends View {
     <div class="recipe__ingredients">
     <h2 class="heading--2">Recipe ingredients</h2>
     <ul class="recipe__ingredient-list">
+    
     ${this._data.ingredients.map(this._generateMarkup_Ingredients).join('')}
       
       </ul>
@@ -120,37 +127,28 @@ class RecipeAreaView extends View {
       </div> 
       `;
   }
-  //public API
 
-  //Publisher
+  //AS4-02 when user click serving btn, invoke handler
   addHandlerBtns(handler) {
-    //event delegation
+    //get servings btn (via event delegation)
     this._parentElement.addEventListener('click', function (e) {
-      //get target btns
       const btn = e.target.closest('.btn--updating-servings');
       if (!btn) return;
-
-      if (btn.dataset.servings < 1 || btn.dataset.servings > 10) return;
+      //set max servings
+      if (btn.dataset.servings < 1 || btn.dataset.servings > MAX_SERVINGS)
+        return;
 
       handler(+btn.dataset.servings);
-      //handler();
     });
   }
 
-  addHandlerWindow(handler) {
-    //Publish–subscribe pattern
-    //listen hashchange and load event
-    ['hashchange', 'load'].forEach(v => window.addEventListener(v, handler));
-  }
-
+  //BS5-01 when user click bookmark btn, invoke handler
   addHandlerBookmarkBtn(handler) {
+    //get servings btn (via event delegation)
     this._parentElement.addEventListener('click', function (e) {
       const btn = e.target.closest('.btn--bookmark');
       if (!btn) return;
 
-      //contrtol bookmark
-      //if alread marked, unmark
-      //if not marked
       handler();
     });
   }

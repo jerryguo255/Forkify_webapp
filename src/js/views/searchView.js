@@ -10,7 +10,7 @@ class SearchView {
     return this.#query;
   }
 
-  // listen search bar input value
+  //SR1-01 when user submit searching ,invoke handler
   addHandlerToSearchBar(handler) {
     const searchFormEl = this.#parentEl;
 

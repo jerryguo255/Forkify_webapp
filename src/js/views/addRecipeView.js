@@ -18,7 +18,7 @@ class AddRecipeView extends View {
   }
 
   // AR7 add handlers to elements
-  //AR7-01 open or close form window
+  //AR7-01 open or close form window when user click
   addHandlerNavBtn(handler) {
     this._addRecipeNavBtn.addEventListener('click', handler);
   }

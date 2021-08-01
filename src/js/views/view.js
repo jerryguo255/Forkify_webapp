@@ -56,7 +56,6 @@ export default class View {
       return this.renderError();
 
     this._data = data;
-
     // convert markup to html DOM tree
     const newDomTree = document
       .createRange()

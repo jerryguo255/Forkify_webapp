@@ -10,21 +10,22 @@ import 'core-js/stable';
 import searchView from './views/searchView.js';
 import paginationView from './views/paginationView.js';
 import addRecipeView from './views/addRecipeView.js';
-
+import { AUTO_CLOSE_SEC } from './config.js';
 // if (module.hot) {
 //   module.hot.accept();
 // }
 
 const controlRecipe = async function () {
   try {
-    //get hash value from url
+    //SD3-03 get hash value from url,
     const id = window.location.hash.slice(1);
     if (!id) return;
 
     //render a spinner first , while getting data
     recipeView.renderSpinner();
 
-    //check if there is recipelist loaded
+    //SR1-05 whenever recipe page changed, highlight the item that user selected
+    //  check if there is a recipelist loaded
     if (model.state.search.recipeList.length !== 0) {
       //update background colour of selected item on recipe list
       recipeListView.update(
@@ -32,14 +33,11 @@ const controlRecipe = async function () {
       );
     }
 
-    //check if there is bookmarklist loaded
-    if (model.state.bookmarkList.length !== 0) {
-      //update background colour of selected item on recipe list
-      bookmarkListView.render(model.state.bookmarkList);
-    }
+    //LD6-05 whenever recipe page changed, highlight the item that user selected
+    bookmarkListView.update(model.state.bookmarkList);
 
+    //SD3-04 load the recipe and render it
     await model.loadRecipe(id);
-
     // send data to view
     recipeView.render(model.state.recipe);
   } catch (error) {
@@ -47,10 +45,11 @@ const controlRecipe = async function () {
   }
 };
 
+//AS4-03 handle click event
 const controlServings = function (newServings) {
   model.updateServings(newServings);
 
-  // shold be updating, instead of rendering whole page
+  //AS4-05 only updating changed value, instead of rendering whole page
   recipeView.update(model.state.recipe);
 
   // recipeView.render(model.state.recipe);
@@ -60,6 +59,7 @@ const controlServings = function (newServings) {
  *
  * @returns
  */
+
 const controlSearchResults = async function () {
   //let state = model.state.search;
   try {
@@ -69,13 +69,13 @@ const controlSearchResults = async function () {
 
     recipeListView.renderSpinner();
 
-    // load search results
+    //SR1-02 loading search results
     await model.loadRecipeList(queryKeywords);
 
-    //render first page of recipe list
+    //SR1-04 render first page of recipe list
     recipeListView.render(model.getRecipesPage(1));
 
-    //render pagination buttons
+    //SP2-01 render pagination buttons
     paginationView.render(model.state.search);
 
     // const itemAmount = state.recipeList.length;
@@ -182,8 +182,7 @@ const controlSearchResults = async function () {
 };
 
 const controlRecipeBookmark = function () {
-  //when bookmark btn click, execute this handler
-  //compare stored bookmarkList
+  //BS5-02 add or remove bookmark when user click
   if (!model.state.recipe.marked) {
     model.state.recipe.marked = true;
     model.addRecipe();
@@ -191,25 +190,31 @@ const controlRecipeBookmark = function () {
     model.state.recipe.marked = false;
     model.removeRecipe();
   }
+
+  //BS5-03 update btn
   recipeView.update(model.state.recipe);
 
-  model.state.bookmarkList.length !== 0
-    ? bookmarkListView.render(model.state.bookmarkList)
-    : bookmarkListView.renderMessage(bookmarkListView._errorMessage);
-  //
+  //LD6-03 when bookmark btn click also render bookmark list
+  controlBookmarkList();
   //console.log(model.state.bookmarkList);
 };
 
 const controlPagination = function () {
-  // model.state;
-
+  //SP2-06 re-render recipe list and pagination buttons
   recipeListView.render(model.getRecipesPage(model.state.search.currentPage));
-
-  //render pagination buttons
   paginationView.render(model.state.search);
 };
 
-// AR7 set handlers
+const controlBookmarkList = function () {
+  //LD6-04 render bookmark list
+  //check if there is bookmarklist loaded
+  model.state.bookmarkList.length !== 0
+    ? bookmarkListView.render(model.state.bookmarkList)
+    : bookmarkListView.renderMessage(bookmarkListView._errorMessage);
+  //
+};
+
+// AR7 show or close form window when user click
 const showAddRecipeForm = function () {
   addRecipeView.showForm();
 };
@@ -217,14 +222,20 @@ const closeAddRecipeForm = function () {
   addRecipeView.closeForm();
 };
 
-//AR7-03 upload recipe
+//to API also load to model, then change hash
 const controlRecipeForm = async function (recipeData) {
   try {
     addRecipeView.renderSpinner();
-    addRecipeView.closeForm();
+    //AR7-03  upload recipe to API
+    await model.uploadRecipe(recipeData);
+    //AR7-07 after uploaded , show message and close form
+    addRecipeView.renderMessage('😀 Successed uploaded! ');
+    setTimeout(closeAddRecipeForm, AUTO_CLOSE_SEC);
 
-    const recipe = await model.uploadRecipe(recipeData);
-    console.log(recipe);
+    // recipeView.render(model.state.recipe);
+    // model.addRecipe(model.state.recipe);
+    //AR7-08 change hash , trigger event, reload recipe page
+    window.location.hash = model.state.recipe.id;
   } catch (error) {
     addRecipeView.renderError(error);
   }
@@ -233,18 +244,27 @@ const controlRecipeForm = async function (recipeData) {
 const init = function () {
   //Publish–subscribe pattern
   //subscriber
+  //add Event handlers to elements
 
+  //LD6
+  bookmarkListView.addHandlerWindow(controlBookmarkList);
+
+  //SD3
+  recipeListView.addHandlerWindow(controlRecipe);
+
+  //SR1
   searchView.addHandlerToSearchBar(controlSearchResults);
 
-  recipeView.addHandlerWindow(controlRecipe);
-
+  //AS4
   recipeView.addHandlerBtns(controlServings);
 
+  //BS5
   recipeView.addHandlerBookmarkBtn(controlRecipeBookmark);
 
+  //SP2
   paginationView.addHandlerPagination(controlPagination);
 
-  //AR7 add Event handlers to elements
+  //AR7
   addRecipeView.addHandlerNavBtn(showAddRecipeForm);
   addRecipeView.addHandlerClose(closeAddRecipeForm);
   addRecipeView.addHandlerFormSubmit(controlRecipeForm);
